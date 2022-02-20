@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: BBH Rewards API
+  version: 1.0.0
+  x-restgeninfo: {}
+servers:
+- url: /
+paths:
+  /lastTripDetail/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LastTripDetail'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /cardStatus/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatus'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /eventPromos/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /reservationsSummary/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /specialRoomRates/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialRoomRateList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+components:
+  schemas:
+    AccountStatus:
+      type: object
+      properties:
+        CompBalance:
+          type: number
+        CompBorgata:
+          type: number
+        CompMgm:
+          type: number
+        SlotBalance:
+          type: number
+        TierPointsEarned:
+          type: number
+        TierPointsToNext:
+          type: number
+        SlotToBePurged:
+          type: number
+        SlotPurgeDate:
+          type: string
+          format: date
+        TierCurrent:
+          type: string
+        TierCurrentText:
+          type: string
+        TierNextText:
+          type: string
+        TierExpirationDate:
+          type: string
+          format: date
+        TierNextMessage:
+          type: string
+        TierCreditsBase:
+          type: number
+        TierCreditsNext:
+          type: number
+        PointsBalance:
+          type: number
+    LastTripDetail:
+      type: object
+      properties:
+        SlotDollarsEarned:
+          type: number
+          format: int32
+        CompDollarsEarned:
+          type: number
+          format: int32
+        TripStartDate:
+          type: string
+          format: date
+        TripEndDate:
+          type: string
+          format: date
+    OfferType:
+      type: integer
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      x-enumNames:
+      - MatchPlay
+      - Hotel
+      - Casino
+      - Event
+      - Entertainment
+      - Other
+    Offer:
+      type: object
+      properties:
+        OfferType:
+          type: OfferType
+        OfferTypeString:
+          type: string
+        Description:
+          type: string
+        LongDescription:
+          type: string
+        DisplayDateRange:
+          type: string
+        ValidFrom:
+          type: string
+          format: date
+        ValidTo:
+          type: string
+          format: date
+        DisplayOrderID:
+          type: integer
+    ReservationType:
+      type: integer
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      x-enumNames:
+      - Hotel
+      - Dining
+      - Event
+      - Other
+    Reservation:
+      type: object
+      properties:
+        ReservationType:
+          type: ReservationType
+        ReservationTypeString:
+          type: string
+        Description:
+          type: string
+        Arrival:
+          type: string
+          format: date-time
+        Departure:
+          type: string
+          format: date-time
+    RoomRate:
+      type: object
+      properties:
+        Date:
+          type: string
+          format: date
+        Rate:
+          type: string
+        RoomType:
+          type: string
+        BedType:
+          type: string
+        AvailableRooms:
+          type: integer
+        IsInRange:
+          type: boolean
+    SpecialRoomRate:
+      type: object
+      properties:
+        Date:
+          type: string
+          format: date
+        Rate:
+          type: string
+        RoomType:
+          type: string
+        Description:
+          type: string
+    OfferList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Offer'
+    ReservationList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Reservation'
+    SpecialRoomRateList:
+      type: array
+      items:
+        $ref: '#/components/schemas/SpecialRoomRate'
+  responses: {}
