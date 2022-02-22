@@ -6,7 +6,7 @@ info:
 servers:
 - url: /
 paths:
-  /lastTripDetail/{accountNumber}:
+  /account/{accountNumber}:
     get:
       parameters:
       - name: accountNumber
@@ -14,26 +14,8 @@ paths:
         required: true
         style: simple
         explode: false
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LastTripDetail'
-        404:
-          description: Not Found
-          content:
-            application/json: {}
-      callbacks: {}
-  /cardStatus/{accountNumber}:
-    get:
-      parameters:
-      - name: accountNumber
-        in: path
-        required: true
-        style: simple
-        explode: false
+        schema:
+          type: string
       responses:
         200:
           description: OK
@@ -46,7 +28,7 @@ paths:
           content:
             application/json: {}
       callbacks: {}
-  /eventPromos/{accountNumber}:
+  /account/{accountNumber}/offers:
     get:
       parameters:
       - name: accountNumber
@@ -54,6 +36,8 @@ paths:
         required: true
         style: simple
         explode: false
+        schema:
+          type: string
       responses:
         200:
           description: OK
@@ -66,7 +50,7 @@ paths:
           content:
             application/json: {}
       callbacks: {}
-  /reservationsSummary/{accountNumber}:
+  /account/{accountNumber}/last-trip:
     get:
       parameters:
       - name: accountNumber
@@ -74,6 +58,30 @@ paths:
         required: true
         style: simple
         explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LastTripDetail'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/reservations:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         200:
           description: OK
@@ -86,7 +94,7 @@ paths:
           content:
             application/json: {}
       callbacks: {}
-  /specialRoomRates/{accountNumber}:
+  /account/{accountNumber}/room-rates:
     get:
       parameters:
       - name: accountNumber
@@ -94,82 +102,103 @@ paths:
         required: true
         style: simple
         explode: false
+        schema:
+          type: string
+      - name: months
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpecialRoomRateList'
+                $ref: '#/components/schemas/RoomRateList'
         404:
           description: Not Found
           content:
             application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/special-room-rate:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialRoomRate'
       callbacks: {}
 components:
   schemas:
     AccountStatus:
       type: object
       properties:
-        CompBalance:
+        compBalance:
           type: number
-        CompBorgata:
+        freePlayBalance:
           type: number
-        CompMgm:
+        pointsBalance:
           type: number
-        SlotBalance:
+        tierPointsEarned:
           type: number
-        TierPointsEarned:
+        tierPointsToNext:
           type: number
-        TierPointsToNext:
-          type: number
-        SlotToBePurged:
-          type: number
-        SlotPurgeDate:
+        compExpirationDate:
           type: string
           format: date
-        TierCurrent:
-          type: string
-        TierCurrentText:
-          type: string
-        TierNextText:
-          type: string
-        TierExpirationDate:
+        freePlayExpirationDate:
           type: string
           format: date
-        TierNextMessage:
+        tierCurrentCode:
           type: string
-        TierCreditsBase:
+        tierCurrentName:
+          type: string
+        tierNextName:
+          type: string
+        tierExpirationDate:
+          type: string
+          format: date
+        tierNextMessage:
+          type: string
+        tierCurrentBase:
           type: number
-        TierCreditsNext:
-          type: number
-        PointsBalance:
+        tierNextBase:
           type: number
     LastTripDetail:
       type: object
       properties:
-        SlotDollarsEarned:
+        slotDollarsEarned:
           type: number
           format: int32
-        CompDollarsEarned:
+        compDollarsEarned:
           type: number
           format: int32
-        TripStartDate:
+        tripStartDate:
           type: string
           format: date
-        TripEndDate:
+        tripEndDate:
           type: string
           format: date
     OfferType:
-      type: integer
+      type: string
       enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      x-enumNames:
       - MatchPlay
       - Hotel
       - Casino
@@ -179,32 +208,27 @@ components:
     Offer:
       type: object
       properties:
-        OfferType:
-          type: OfferType
-        OfferTypeString:
+        offerType:
+          $ref: '#/components/schemas/OfferType'
+        offerTypeString:
           type: string
-        Description:
+        description:
           type: string
-        LongDescription:
+        longDescription:
           type: string
-        DisplayDateRange:
+        displayDateRange:
           type: string
-        ValidFrom:
-          type: string
-          format: date
-        ValidTo:
+        validFrom:
           type: string
           format: date
-        DisplayOrderID:
+        validTo:
+          type: string
+          format: date
+        displayOrderID:
           type: integer
     ReservationType:
-      type: integer
+      type: string
       enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      x-enumNames:
       - Hotel
       - Dining
       - Event
@@ -212,45 +236,41 @@ components:
     Reservation:
       type: object
       properties:
-        ReservationType:
-          type: ReservationType
-        ReservationTypeString:
+        reservationType:
+          $ref: '#/components/schemas/ReservationType'
+        reservationTypeString:
           type: string
-        Description:
+        description:
           type: string
-        Arrival:
+        arrival:
           type: string
           format: date-time
-        Departure:
+        departure:
           type: string
           format: date-time
     RoomRate:
       type: object
       properties:
-        Date:
+        date:
           type: string
           format: date
-        Rate:
+        rate:
           type: string
-        RoomType:
+        roomType:
           type: string
-        BedType:
+        bedType:
           type: string
-        AvailableRooms:
+        availableRooms:
           type: integer
-        IsInRange:
-          type: boolean
     SpecialRoomRate:
       type: object
       properties:
-        Date:
+        date:
           type: string
           format: date
-        Rate:
+        rate:
           type: string
-        RoomType:
-          type: string
-        Description:
+        description:
           type: string
     OfferList:
       type: array
@@ -260,8 +280,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Reservation'
-    SpecialRoomRateList:
+    RoomRateList:
       type: array
       items:
-        $ref: '#/components/schemas/SpecialRoomRate'
+        $ref: '#/components/schemas/RoomRate'
   responses: {}
+  parameters: {}
+  requestBodies: {}
+  callbacks: {}
