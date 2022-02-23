@@ -7,7 +7,7 @@ info:
 servers:
 - url: /
 security:
-- basicAuth: []
+- bearerAuth: []
 paths:
   /account/{accountNumber}:
     get:
@@ -26,10 +26,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountStatus'
+        401:
+          $ref: '#/components/responses/401'
         404:
-          description: Not Found
-          content:
-            application/json: {}
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/offers:
     get:
@@ -48,10 +48,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OfferList'
+        401:
+          $ref: '#/components/responses/401'
         404:
-          description: Not Found
-          content:
-            application/json: {}
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/last-trip:
     get:
@@ -70,10 +70,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LastTripDetail'
+        401:
+          $ref: '#/components/responses/401'
         404:
-          description: Not Found
-          content:
-            application/json: {}
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/reservations:
     get:
@@ -92,10 +92,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReservationList'
+        401:
+          $ref: '#/components/responses/401'
         404:
-          description: Not Found
-          content:
-            application/json: {}
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/room-rates:
     get:
@@ -121,10 +121,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoomRateList'
+        401:
+          $ref: '#/components/responses/401'
         404:
-          description: Not Found
-          content:
-            application/json: {}
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/special-room-rate:
     get:
@@ -137,16 +137,16 @@ paths:
         schema:
           type: string
       responses:
-        404:
-          description: Not Found
-          content:
-            application/json: {}
         200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpecialRoomRate'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/check-pin:
     post:
@@ -165,6 +165,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckPinResponse'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
       callbacks: {}
   /account/{accountNumber}/validate-pin:
     post:
@@ -189,6 +193,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidatePinResponse'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
       callbacks: {}
 components:
   schemas:
@@ -421,10 +429,16 @@ components:
           "isValidPin": false,
           "message": "Please visit the Rewards Desk to reset your PIN."
         }
-  responses: {}
+  responses:
+    401:
+      description: Access token is missing or invalid
+    404:
+      description: Account not found
+  parameters: {}
   examples: {}
+  requestBodies: {}
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: Basic
+      scheme: Bearer
   callbacks: {}
