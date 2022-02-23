@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: BBH Rewards API
+  version: 1.0.0
+  x-restgeninfo: {}
+servers:
+- url: /
+paths:
+  /account/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardInfo'
+      callbacks: {}
+components:
+  schemas:
+    AccountStatus:
+      type: object
+      properties:
+        compBalance:
+          type: number
+        freePlayBalance:
+          type: number
+        pointsBalance:
+          type: number
+        tierPointsEarned:
+          type: number
+        tierPointsToNext:
+          type: number
+        compExpirationDate:
+          type: string
+          format: date
+        freePlayExpirationDate:
+          type: string
+          format: date
+        tierCurrentCode:
+          type: string
+        tierCurrentName:
+          type: string
+        tierNextName:
+          type: string
+        tierExpirationDate:
+          type: string
+          format: date
+        tierNextMessage:
+          type: string
+        tierCurrentBase:
+          type: number
+        tierNextBase:
+          type: number
+    LastTripDetail:
+      type: object
+      properties:
+        slotDollarsEarned:
+          type: number
+          format: int32
+        compDollarsEarned:
+          type: number
+          format: int32
+        tripStartDate:
+          type: string
+          format: date
+        tripEndDate:
+          type: string
+          format: date
+    OfferType:
+      type: string
+      enum:
+      - MatchPlay
+      - Hotel
+      - Casino
+      - Event
+      - Entertainment
+      - Other
+    Offer:
+      type: object
+      properties:
+        offerType:
+          $ref: '#/components/schemas/OfferType'
+        offerTypeString:
+          type: string
+        description:
+          type: string
+        longDescription:
+          type: string
+        displayDateRange:
+          type: string
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+        displayOrderID:
+          type: integer
+    ReservationType:
+      type: string
+      enum:
+      - Hotel
+      - Dining
+      - Event
+      - Other
+    Reservation:
+      type: object
+      properties:
+        reservationType:
+          $ref: '#/components/schemas/ReservationType'
+        reservationTypeString:
+          type: string
+        description:
+          type: string
+        arrival:
+          type: string
+          format: date-time
+        departure:
+          type: string
+          format: date-time
+    RoomRate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        rate:
+          type: string
+        roomType:
+          type: string
+        bedType:
+          type: string
+        availableRooms:
+          type: integer
+    SpecialRoomRate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        rate:
+          type: string
+        description:
+          type: string
+    OfferList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Offer'
+    ReservationList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Reservation'
+    RoomRateList:
+      type: array
+      items:
+        $ref: '#/components/schemas/RoomRate'
+    RewardInfo:
+      type: object
+      properties:
+        accountStatus:
+          $ref: '#/components/schemas/AccountStatus'
+        lastTrip:
+          $ref: '#/components/schemas/LastTripDetail'
+        offers:
+          $ref: '#/components/schemas/OfferList'
+        reservations:
+          $ref: '#/components/schemas/ReservationList'
+        roomRates:
+          $ref: '#/components/schemas/RoomRateList'
+        specialRoomRate:
+          $ref: '#/components/schemas/SpecialRoomRate'
+  responses: {}
+  parameters: {}
+  callbacks: {}
