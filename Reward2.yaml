@@ -3,7 +3,9 @@ info:
   title: BBH Rewards API
   description: Provides reward and loyalty information to BBH's ITV and mobile platforms.
   contact:
+    name: Dennis Calla
     url: https://broadbandhospitality.com
+    email: dcalla@bbhnow.com
   version: 1.0.0
   x-restgeninfo: {}
 servers:
@@ -149,6 +151,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpecialRoomRate'
+      callbacks: {}
+  /account/{accountNumber}/check-pin:
+    post:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+      callbacks: {}
+  /account/{accountNumber}/validate-pin:
+    post:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pin'
+        required: true
+      responses:
+        200:
+          description: OK
       callbacks: {}
 components:
   schemas:
@@ -355,6 +391,8 @@ components:
         ]
       items:
         $ref: '#/components/schemas/RoomRate'
+    pin:
+      type: string
   responses: {}
   parameters: {}
   examples: {}
