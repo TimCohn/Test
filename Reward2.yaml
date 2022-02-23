@@ -1,12 +1,134 @@
 openapi: 3.0.3
 info:
   title: BBH Rewards API
+  description: Provides reward and loyalty information to BBH's ITV and mobile platforms.
+  contact:
+    url: https://broadbandhospitality.com
   version: 1.0.0
   x-restgeninfo: {}
 servers:
 - url: /
+security:
+- basicAuth: []
 paths:
   /account/{accountNumber}:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatus'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/offers:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/last-trip:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LastTripDetail'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/reservations:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/room-rates:
+    get:
+      parameters:
+      - name: accountNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: months
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomRateList'
+        404:
+          description: Not Found
+          content:
+            application/json: {}
+      callbacks: {}
+  /account/{accountNumber}/special-room-rate:
     get:
       parameters:
       - name: accountNumber
@@ -26,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RewardInfo'
+                $ref: '#/components/schemas/SpecialRoomRate'
       callbacks: {}
 components:
   schemas:
@@ -64,13 +186,30 @@ components:
           type: number
         tierNextBase:
           type: number
+      example: |-
+        {
+          "tierCurrentBase": 3000,
+          "tierPointsToNext": 9900,
+          "pointsBalance": 10100,
+          "freePlayExpirationDate": "2022-04-23",
+          "tierNextMessage": "You need 9900 points to reach Prime",
+          "tierCurrentCode": "PREF",
+          "tierExpirationDate": "2022-04-23",
+          "tierCurrentName": "Preferred",
+          "freePlayBalance": 0,
+          "tierPointsEarned": 7100,
+          "compExpirationDate": "2022-02-23",
+          "compBalance": 548.25,
+          "tierNextName": "Prime",
+          "tierNextBase": 20000
+        }
     LastTripDetail:
       type: object
       properties:
-        slotDollarsEarned:
+        freePlayEarned:
           type: number
           format: int32
-        compDollarsEarned:
+        compEarned:
           type: number
           format: int32
         tripStartDate:
@@ -79,6 +218,7 @@ components:
         tripEndDate:
           type: string
           format: date
+      example: '{"slotDollarsEarned":2134995019,"tripStartDate":"2022-02-23","compDollarsEarned":1818059384,"tripEndDate":"2022-02-23"}'
     OfferType:
       type: string
       enum:
@@ -97,8 +237,6 @@ components:
           type: string
         description:
           type: string
-        longDescription:
-          type: string
         displayDateRange:
           type: string
         validFrom:
@@ -107,8 +245,15 @@ components:
         validTo:
           type: string
           format: date
-        displayOrderID:
-          type: integer
+      example: |-
+        {
+           "offerType": "MatchPlay",
+           "displayDateRange": "2/20/2022 - 2/22/2022",
+           "description": "$50 MATCH PLAY",
+           "validFrom": "2022-02-20",
+           "offerTypeString": "Match Play",
+           "validTo": "2022-02-22"
+        }
     ReservationType:
       type: string
       enum:
@@ -125,12 +270,20 @@ components:
           type: string
         description:
           type: string
-        arrival:
+        start:
           type: string
           format: date-time
-        departure:
+        end:
           type: string
           format: date-time
+      example: |-
+        {
+           "start": "2022-02-23T23:00:00Z",
+           "reservationTypeString": "Restaurant",
+           "reservationType": "Dining",
+           "description": "AMADA (Party of 2)",
+           "end": "2022-02-23T23:00:00Z"
+        }
     RoomRate:
       type: object
       properties:
@@ -143,8 +296,16 @@ components:
           type: string
         bedType:
           type: string
-        availableRooms:
-          type: integer
+        available:
+          type: boolean
+      example: |-
+        {
+          "date": "2022-02-23",
+          "rate": "$86",
+          "available": true,
+          "roomType": "Deluxe Room",
+          "bedType": "1 King Bed"
+        }
     SpecialRoomRate:
       type: object
       properties:
@@ -155,6 +316,12 @@ components:
           type: string
         description:
           type: string
+      example: |-
+        {
+          "date": "2022-02-27",
+          "rate": "$99",
+          "description": "Classic room, 1 King Bed"
+        }
     OfferList:
       type: array
       items:
@@ -165,23 +332,35 @@ components:
         $ref: '#/components/schemas/Reservation'
     RoomRateList:
       type: array
+      example: |-
+        [
+          {
+            "date": "2022-02-23",
+            "rate": "$86",
+            "available": true,
+            "roomType": "Deluxe Room",
+            "bedType": "1 King Bed"
+          },
+          {
+            "date": "2022-02-24",
+            "rate": "$99",
+            "available": true,
+            "roomType": "Deluxe Room",
+            "bedType": "1 King Bed"
+          },
+            {
+            "date": "2022-02-25",
+            "available": false
+          }
+        ]
       items:
         $ref: '#/components/schemas/RoomRate'
-    RewardInfo:
-      type: object
-      properties:
-        accountStatus:
-          $ref: '#/components/schemas/AccountStatus'
-        lastTrip:
-          $ref: '#/components/schemas/LastTripDetail'
-        offers:
-          $ref: '#/components/schemas/OfferList'
-        reservations:
-          $ref: '#/components/schemas/ReservationList'
-        roomRates:
-          $ref: '#/components/schemas/RoomRateList'
-        specialRoomRate:
-          $ref: '#/components/schemas/SpecialRoomRate'
   responses: {}
   parameters: {}
+  examples: {}
+  requestBodies: {}
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: Basic
   callbacks: {}
