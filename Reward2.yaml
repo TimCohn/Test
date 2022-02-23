@@ -2,10 +2,6 @@ openapi: 3.0.3
 info:
   title: BBH Rewards API
   description: Provides reward and loyalty information to BBH's ITV and mobile platforms.
-  contact:
-    name: Dennis Calla
-    url: https://broadbandhospitality.com
-    email: dcalla@bbhnow.com
   version: 1.0.0
   x-restgeninfo: {}
 servers:
@@ -165,6 +161,10 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckPinResponse'
       callbacks: {}
   /account/{accountNumber}/validate-pin:
     post:
@@ -185,6 +185,10 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatePinResponse'
       callbacks: {}
 components:
   schemas:
@@ -393,10 +397,32 @@ components:
         $ref: '#/components/schemas/RoomRate'
     pin:
       type: string
+    CheckPinResponse:
+      type: object
+      properties:
+        hasValidPin:
+          type: boolean
+        message:
+          type: string
+      example: |-
+        {
+          "message": "Please visit the Rewards Desk to reset your PIN.",
+          "hasValidPin": false
+        }
+    ValidatePinResponse:
+      type: object
+      properties:
+        isValidPin:
+          type: boolean
+        message:
+          type: string
+      example: |-
+        {
+          "isValidPin": false,
+          "message": "Please visit the Rewards Desk to reset your PIN."
+        }
   responses: {}
-  parameters: {}
   examples: {}
-  requestBodies: {}
   securitySchemes:
     basicAuth:
       type: http
